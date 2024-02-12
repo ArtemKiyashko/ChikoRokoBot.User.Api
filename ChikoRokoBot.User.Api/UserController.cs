@@ -10,14 +10,20 @@ using Newtonsoft.Json;
 
 namespace ChikoRokoBot.User.Api
 {
-    public static class GetChat
+    public class UserController
     {
-        [FunctionName("GetChat")]
-        public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+        private readonly ILogger<UserController> _logger;
+
+        public UserController(ILogger<UserController> logger)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            _logger = logger;
+        }
+
+        [FunctionName("GetChatById")]
+        public async Task<IActionResult> GetChatById(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req, long chatId)
+        {
+            _logger.LogInformation("C# HTTP trigger function processed a request.");
 
             string name = req.Query["name"];
 

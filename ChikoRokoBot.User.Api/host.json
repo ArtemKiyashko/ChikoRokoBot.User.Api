@@ -6,7 +6,15 @@
                 "isEnabled": true,
                 "excludedTypes": "Request"
             },
-            "enableLiveMetricsFilters": true
+            "enableLiveMetricsFilters": true,
+            "snapshotConfiguration": {
+                "isEnabled": true
+            }
+        },
+        "logLevel": {
+            "ChikoRokoBot.User.Api.Repositories.UserRepository": "Information",
+            "ChikoRokoBot.User.Api.Managers.UserManager": "Information",
+            "ChikoRokoBot.User.Api.UserController": "Information"
         }
     }
 }
