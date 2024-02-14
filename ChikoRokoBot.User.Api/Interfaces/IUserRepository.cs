@@ -5,9 +5,9 @@ namespace ChikoRokoBot.User.Api.Interfaces
 {
 	public interface IUserRepository
 	{
-		public Task<UserModel> GetUserByIdAsync(long chatId);
+		public Task<UserModel> GetUserById(long userId);
 		public Task<long> UpdateUser(UserModel userModel);
-		public Task DeleteUserById(long chatId);
+		public Task DeleteUserById(long userId);
 		public Task<long> InsertUser(UserModel userModel);
 	}
 }

@@ -19,25 +19,13 @@ namespace ChikoRokoBot.User.Api.Managers
             _logger = logger;
         }
 
-        public Task DeleteUserById(long chatId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task DeleteUserById(long userId) => _userRepository.DeleteUserById(userId);
 
-        public Task<UserModel> GetUserByIdAsync(long chatId)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<UserModel> GetUserById(long userId) => _userRepository.GetUserById(userId);
 
-        public Task<long> InsertUser(UserModel userModel)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<long> InsertUser(UserModel userModel) => _userRepository.InsertUser(userModel);
 
-        public Task<long> UpdateUser(UserModel userModel)
-        {
-            throw new NotImplementedException();
-        }
+        public Task<long> UpdateUser(UserModel userModel) => _userRepository.UpdateUser(userModel);
     }
 }
 

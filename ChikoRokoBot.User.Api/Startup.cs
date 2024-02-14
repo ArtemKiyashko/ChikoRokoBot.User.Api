@@ -1,6 +1,9 @@
 ﻿using System;
 using Azure.Identity;
+using ChikoRokoBot.User.Api.Interfaces;
+using ChikoRokoBot.User.Api.Managers;
 using ChikoRokoBot.User.Api.Options;
+using ChikoRokoBot.User.Api.Repositories;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Azure;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +36,9 @@ namespace ChikoRokoBot.User.Api
                 else
                     clientBuilder.AddTableServiceClient(_apiOptions.TableServiceConnection);
             });
+
+            builder.Services.AddScoped<IUserManager, UserManager>();
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
         }
     }
 }

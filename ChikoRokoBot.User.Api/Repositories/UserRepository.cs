@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Azure.Data.Tables;
+using ChikoRokoBot.User.Api.Entities;
 using ChikoRokoBot.User.Api.Interfaces;
 using ChikoRokoBot.User.Api.Models;
 using ChikoRokoBot.User.Api.Options;
@@ -33,24 +34,43 @@ namespace ChikoRokoBot.User.Api.Repositories
             _users.CreateIfNotExists();
         }
 
-        public Task DeleteUserById(long chatId)
+        public async Task DeleteUserById(long userId)
         {
-            throw new NotImplementedException();
+            await _users.DeleteEntityAsync(_options.DefaultPartitionKey, userId.ToString());
         }
 
-        public Task<UserModel> GetUserByIdAsync(long chatId)
+        public async Task<UserModel> GetUserById(long userId)
         {
-            throw new NotImplementedException();
+            var userEntity = await _users.GetEntityIfExistsAsync<UserEntity>(_options.DefaultPartitionKey, userId.ToString());
+            return userEntity.HasValue ? _mapper.Map<UserModel>(userEntity.Value) : default;
         }
 
-        public Task<long> InsertUser(UserModel userModel)
+        public async Task<long> InsertUser(UserModel userModel)
         {
-            throw new NotImplementedException();
+            var userEntity = _mapper.Map<UserEntity>(userModel);
+            userEntity.PartitionKey = _options.DefaultPartitionKey;
+            userEntity.RowKey = userModel.ChatId.ToString();
+
+            await _users.AddEntityAsync(userEntity);
+
+            return userModel.ChatId;
         }
 
-        public Task<long> UpdateUser(UserModel userModel)
+        public async Task<long> UpdateUser(UserModel userModel)
         {
-            throw new NotImplementedException();
+            var currentUser = await _users.GetEntityIfExistsAsync<UserEntity>(_options.DefaultPartitionKey, userModel.ChatId.ToString());
+
+            if (!currentUser.HasValue)
+                throw new ArgumentException($"User not exists: {userModel.ChatId}", nameof(userModel.ChatId));
+
+            var userEntity = _mapper.Map<UserEntity>(userModel);
+            userEntity.PartitionKey = _options.DefaultPartitionKey;
+            userEntity.RowKey = userModel.ChatId.ToString();
+            userEntity.ETag = currentUser.Value.ETag;
+
+            await _users.UpdateEntityAsync(userEntity, userEntity.ETag);
+
+            return userModel.ChatId;
         }
     }
 }

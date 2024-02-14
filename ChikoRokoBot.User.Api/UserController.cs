@@ -1,41 +1,65 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using ChikoRokoBot.User.Api.Interfaces;
+using ChikoRokoBot.User.Api.Models;
+using System;
 
 namespace ChikoRokoBot.User.Api
 {
     public class UserController
     {
         private readonly ILogger<UserController> _logger;
+        private readonly IUserManager _userManager;
 
-        public UserController(ILogger<UserController> logger)
+        public UserController(
+            ILogger<UserController> logger,
+            IUserManager userManager)
         {
             _logger = logger;
+            _userManager = userManager;
         }
 
-        [FunctionName("GetChatById")]
-        public async Task<IActionResult> GetChatById(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req, long chatId)
+        [FunctionName("GetUserById")]
+        public async Task<IActionResult> GetUserById(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "user/{userId:long}")] HttpRequest req, long userId)
         {
-            _logger.LogInformation("C# HTTP trigger function processed a request.");
+            var user = await _userManager.GetUserById(userId);
+            return new OkObjectResult(user);
+        }
 
-            string name = req.Query["name"];
+        [FunctionName("DeleteUserById")]
+        public async Task<IActionResult> DeleteUserById(
+            [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "user/{userId:long}")] HttpRequest req, long userId)
+        {
+            await _userManager.DeleteUserById(userId);
+            return new OkResult();
+        }
 
-            string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
-            name = name ?? data?.name;
+        [FunctionName("CreateUser")]
+        public async Task<IActionResult> CreateUser(
+            [HttpTrigger(AuthorizationLevel.Function, "post", Route = "user")] UserModel userModel)
+        {
+            var userId = await _userManager.InsertUser(userModel);
+            return new OkObjectResult(userId);
+        }
 
-            string responseMessage = string.IsNullOrEmpty(name)
-                ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-                : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-            return new OkObjectResult(responseMessage);
+        [FunctionName("UpdateUser")]
+        public async Task<IActionResult> UpdateUser(
+            [HttpTrigger(AuthorizationLevel.Function, "put", Route = "user")] UserModel userModel)
+        {
+            try
+            {
+                var userId = await _userManager.UpdateUser(userModel);
+                return new OkObjectResult(userId);
+            }
+            catch (ArgumentException ex)
+            {
+                return new BadRequestObjectResult(ex.Message);
+            }
         }
     }
 }
