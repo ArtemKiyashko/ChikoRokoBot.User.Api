@@ -9,7 +9,7 @@
     <PackageReference Include="Azure.Data.Tables" Version="12.8.3" />
     <PackageReference Include="Azure.Identity" Version="1.10.4" />
     <PackageReference Include="Microsoft.Azure.Functions.Extensions" Version="1.1.0" />
-    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.1" />
+    <PackageReference Include="Microsoft.Extensions.Azure" Version="1.7.2" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Entities\" />
